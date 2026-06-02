@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: foundrycast
+      POSTGRES_PASSWORD: foundrycast
+      POSTGRES_DB: foundrycast
+    ports:
+      - "5432:5432"
+    volumes:
+      - fc_pgdata:/var/lib/postgresql/data
+      # migrations auto-apply on first boot, in filename order
+      - ./db/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U foundrycast"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  fc_pgdata:
